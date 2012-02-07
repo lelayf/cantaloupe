@@ -1,4 +1,4 @@
-(defproject thrift-serde "1.0.0-SNAPSHOT"
+(defproject cantaloupe "1.0.0-SNAPSHOT"
   :description "FIXME: write description"
   :source-path "src/clj"
   :java-source-path "src/jvm"
