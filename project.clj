@@ -2,6 +2,7 @@
   :description "FIXME: write description"
   :source-path "src/clj"
   :java-source-path "src/jvm"
+  :jvm-opts ["-Xmx768m" "-server"]
   :dependencies [[org.clojure/clojure "1.3.0"]
                  [cascalog "1.8.5"]
                  [backtype/cascading-thrift "0.2.0"]

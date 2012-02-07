@@ -6,8 +6,10 @@
   (:import [backtype.hadoop ThriftSerialization]))
 
 
-(defn make-order [d] (from-thrift-c d (Order.)))
-(defn getAmount [^Order t] (.getAmount t))
+(defn- deserialize-order [d] (from-thrift-c d (Order.)))
+(defn- getAmount [^Order t] (.getAmount t))
+
+;; Generate 10 serialized random orders
 
 (def orders
     (vec (for [i (range 100 110)]
@@ -20,16 +22,18 @@
 
 (println orders)
 
+;; Dump orders
+
 (?<- (hfs-seqfile "/tmp/thrift-orders" :sinkmode :replace)
       [?o]
       (orders ?o))
 
-(println "reloading")
+;; Reload orders and display amount
 
 (?<- (stdout)
-      [?b ?c]
-      ((hfs-seqfile "/tmp/thrift-orders") ?o)
-      (make-order ?o :> ?a)
-      (getAmount ?a :> ?b)
-      (* 2 ?b :> ?c))
+      [?a]
+      ((hfs-seqfile "/tmp/thrift-orders") ?s)
+      (deserialize-order ?s :> ?d)
+      (getAmount ?d :> ?a))
+;;      (* 2 ?b :> ?c))
 
