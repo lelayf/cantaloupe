@@ -8,7 +8,7 @@
     (let [serializer (TSerializer. (org.apache.thrift.protocol.TBinaryProtocol$Factory.))]
           (.serialize serializer obj)))
 
-(defn to-thrift-c [obj]
+(defn to-compact-thrift [obj]
       (let [serializer (TSerializer. (org.apache.thrift.protocol.TCompactProtocol$Factory.))]
                   (.serialize serializer obj)))
 
@@ -17,7 +17,7 @@
           (.deserialize deserializer target-obj thrift-payload))
     target-obj)
 
-(defn from-thrift-c [thrift-payload target-obj]
+(defn from-compact-thrift [thrift-payload target-obj]
       (let [deserializer (TDeserializer. (org.apache.thrift.protocol.TCompactProtocol$Factory.))]
                   (.deserialize deserializer target-obj thrift-payload))
             target-obj)

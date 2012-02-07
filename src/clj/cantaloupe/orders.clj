@@ -2,11 +2,10 @@
   (:use cascalog.api)
   (:require [cascalog [workflow :as w] [ops :as c] [vars :as v]])
   (:use [cantaloupe.thrift])
-  (:import [net.cantaloupe.thrift Order Status])
-  (:import [backtype.hadoop ThriftSerialization]))
+  (:import [net.cantaloupe.thrift Order Status]))
+;  (:import [backtype.hadoop ThriftSerialization]))
 
-
-(defn- deserialize-order [d] (from-thrift-c d (Order.)))
+(defn- deserialize-order [d] (from-compact-thrift d (Order.)))
 (defn- getAmount [^Order t] (.getAmount t))
 
 ;; Generate 10 serialized random orders
@@ -14,7 +13,7 @@
 (def orders
     (vec (for [i (range 100 110)]
      (let [r (rand-int 2)]
-      (vector (to-thrift-c
+      (vector (to-compact-thrift
        (doto (Order.)
             (.setOid i)
             (.setAmount (+ 9.9 i))
@@ -30,10 +29,13 @@
 
 ;; Reload orders and display amount
 
+(def source (hfs-seqfile "/tmp/thrift-orders"))
+
 (?<- (stdout)
       [?a]
-      ((hfs-seqfile "/tmp/thrift-orders") ?s)
+      (source ?s)
       (deserialize-order ?s :> ?d)
       (getAmount ?d :> ?a))
+
 ;;      (* 2 ?b :> ?c))
 
