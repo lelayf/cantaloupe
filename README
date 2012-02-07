@@ -1,14 +1,6 @@
 # cantaloupe
 
-At the repl:
-(use 'cantaloupe.orders)
-
-=> in current commit, jobs execute several times until heap is out of memory.
-
-When called again with:
-(use 'cantaloupe.orders :reload)
-
-=> job executes once and behaves as expected
+A super simple Thrift serde + cascalog example.
 
 ## License
 
