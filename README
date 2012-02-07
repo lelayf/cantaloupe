@@ -1,13 +1,18 @@
 # cantaloupe
 
-FIXME: write description
+At the repl:
+(use 'cantaloupe.orders)
 
-## Usage
+=> in current commit, jobs execute several times until heap is out of memory.
 
-FIXME: write
+When called again with:
+(use 'cantaloupe.orders :reload)
+
+=> job executes once and behaves as expected
 
 ## License
 
 Copyright (C) 2012 FIXME
 
 Distributed under the Eclipse Public License, the same as Clojure.
+
