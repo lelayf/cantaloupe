@@ -14,7 +14,7 @@
 ;; return form.
 ;;
 ;; Here's an import of Hadoop's java serialization interface:
-(import 'org.apache.hadoop.io.serializer.JavaSerialization)
+;(import 'org.apache.hadoop.io.serializer.JavaSerialization)
 
 ;; And here's Backtype's Thrift serialization. Get this by including
 ;;
@@ -26,17 +26,29 @@
 
 
 ;; Now, the job-conf map:
-{"io.serializations" JavaSerialization}
+;{"io.serializations" JavaSerialization}
 
 ;; To provide multiple arguments, skip the usual comma separation and
 ;; wrap multiple arguments in a vector:
-;; {"io.serializations" [ThriftSerialization JavaSerialization]}
+(require '[clojure.string :as s])
+
+{"io.serializations" [ThriftSerialization]
+ "cascading.serialization.tokens" "131=net.cantaloupe.thrift.Order"
+ "mapred.map.output.compression.codec" "com.hadoop.compression.lzo.LzoCodec"
+ "io.compression.codec.lzo.class" "com.hadoop.compression.lzo.LzoCodec"
+ "io.compression.codecs"
+       (s/join "," ["org.apache.hadoop.io.compress.GzipCodec"
+                                    "org.apache.hadoop.io.compress.DefaultCodec"
+                                    "org.apache.hadoop.io.compress.BZip2Codec"
+                                    "com.hadoop.compression.lzo.LzoCodec"
+                                    "com.hadoop.compression.lzo.LzopCodec"])}
+;{"io.serializations" [JavaSerialization]}
 
 ;; The above examples use class symbols directly. You can also use
 ;; string versions of the full qualified class names.
 
-{"io.serializations" ["backtype.hadoop.ThriftSerialization"
-                      "org.apache.hadoop.io.serializer.JavaSerialization"]}
+;{"io.serializations" ["backtype.hadoop.ThriftSerialization"
+;                      "org.apache.hadoop.io.serializer.JavaSerialization"]}
 
 ;; That's it! The above map will get returned, as it's the last form
 ;; in the file.
