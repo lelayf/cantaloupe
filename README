@@ -1,10 +1,11 @@
 # cantaloupe
 
 A super simple Thrift serde + cascalog example.
+On Mac OS X : need lzo + java headers
 
 ## License
 
-Copyright (C) 2012 FIXME
+Copyright (C) 2012 françois le lay
 
 Distributed under the Eclipse Public License, the same as Clojure.
 

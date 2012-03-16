@@ -10,7 +10,7 @@
 
 ;; Generate 100 serialized random orders
 
-(def orders
+(def compact-thrift-orders
     (vec (for [i (range 100 200)]
      (let [r (rand-int 2)]
       (vector (to-compact-thrift
@@ -19,7 +19,7 @@
             (.setAmount (+ 9.9 i))
             (.setStatus (cond (= r 0) Status/PENDING (= r 1) Status/DESPATCHED)))))))))
 
-(def orders2
+(def thrift-orders
       (vec (for [i (range 100 200)]
         (let [r (rand-int 2)]
           (vector
@@ -30,36 +30,45 @@
 
 
 ;; Dump orders
-(defn dump-orders []
+(defn dump-compact-thrift []
+  (?<- (hfs-seqfile "/tmp/compact-thrift-orders" :sinkmode :replace)
+        [?o]
+        (compact-thrift-orders ?o)))
+
+(defn dump-thrift []
   (?<- (hfs-seqfile "/tmp/thrift-orders" :sinkmode :replace)
-        [?o]
-        (orders ?o)))
+       [?o]
+       (thrift-orders ?o)))
 
-(defn dump-lzo []
-  (?- (hfs-lzo-thrift "/tmp/lzo-orders" Order :sinkmode :replace)
-      orders2))
-
-(defn dump-orders2 []
-  (?<- (hfs-seqfile "/tmp/thrift-orders2" :sinkmode :replace)
-        [?o]
-       (orders2 ?o)))
+(defn dump-lzo-thrift []
+  (?- (hfs-lzo-thrift "/tmp/lzo-thrift-orders" Order :sinkmode :replace)
+      thrift-orders))
 
 ;; Reload orders and display amount
-(def orders-src (hfs-seqfile "/tmp/thrift-orders"))
+(def src-compact-thrift (hfs-seqfile "/tmp/compact-thrift-orders"))
 
-(def orders-src2 (hfs-seqfile "/tmp/thrift-orders2"))
+(def src-thrift (hfs-seqfile "/tmp/thrift-orders"))
 
-(defn load-orders []
+(def src-lzo-thrift (hfs-lzo-thrift "/tmp/lzo-thrift-orders" Order))
+
+;; loaders 
+(defn load-compact-thrift []
   (?<- (stdout)
         [?a]
-        (orders-src ?s)
+        (src-compact-thrift ?s)
         (deserialize-order ?s :> ?d)
         (getAmount ?d :> ?a)))
 
-(defn load-orders2 []
+(defn load-thrift []
   (?<- (stdout)
        [?a]
-       (orders-src2 ?s)
+       (src-thrift ?s)
+       (getAmount ?s :> ?a)))
+
+(defn load-lzo-thrift []
+  (?<- (stdout)
+       [?a]
+       (src-lzo-thrift ?s)
        (getAmount ?s :> ?a)))
 
 
